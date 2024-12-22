@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "index.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "env": {
+      "MONGO_URI": "mongodb+srv://afolayanthopex:j5NLLVoTj8Q4ywcC@cluster0.qcn9c.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+      "PORT": "4300",
+      "JWT_SECRET": "adhfjlakdhfeufadklfna;dgjehij;eskdfneiofndvcnkvd",
+      "MAIL_PASS": "ynhs jbwg nbar aorv",
+      "MAIL_USER": "afolayanthopex@gmail.com"
+    }
+  }
+  
