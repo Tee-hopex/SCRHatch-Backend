@@ -29,6 +29,11 @@ app.use(express.json());
 
 app.use('/auth', require('./routes/auth'))
 
+app.get('/test', (req, res) => {
+    res.json({ message: 'Test route works!' });
+});
+
+
 
 // Start server
 app.listen(PORT, () => {
