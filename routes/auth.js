@@ -13,7 +13,7 @@ const {sendPasswordReset, sendOTP} = require('../utils/nodemailer')
 const loginLimiter = rateLimit({
   windowMs: 4 * 60 * 1000, // 15 minutes
   max: 5, // Limit each IP to 5 requests per windowMs
-  message: { status: 'error', msg: 'Too many login attempts. Please try again later.' }
+  message: { status: 'error', msg: 'Too many login attempts. Please try again in 4 minutes time.' }
 });
 
 
