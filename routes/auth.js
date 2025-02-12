@@ -16,12 +16,11 @@ const loginLimiter = rateLimit({
   message: { status: 'error', msg: 'Too many login attempts. Please try again in 4 minutes time.' }
 });
 
-
 // Signup endpoint
 route.post('/sign_up', async (req, res) => {
     const { firstName, lastName, businessName, email, phoneNumber, businessBirthDate, password, verifyPassword, selectedPlan, bankCard } = req.body;
 
-    // Validation for required fields (no username)
+    // Validation for required fields 
     if (!password || !firstName || !lastName || !businessName || !email || !phoneNumber || !businessBirthDate || !verifyPassword || !selectedPlan) {
         return res.status(400).send({ "status": "error", "msg": "All fields must be filled" });
     }
@@ -93,7 +92,6 @@ route.post('/login', loginLimiter, async (req, res) => {
         res.status(500).send({ 'status': 'error', 'msg': 'Some error occurred', error: error.message });
     }
 });
-
 
 // Function to generate a random 8-digit OTP
 const generateOTP = () => {

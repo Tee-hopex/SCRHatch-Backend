@@ -8,9 +8,12 @@ const userSchema = new mongoose.Schema({
   phoneNumber: { type: String, required: true },
   businessBirthDate: { type: Date, required: true },
   password: { type: String, required: true },
+  role: { type: String, enum: ['Admin', 'Customer']},
+  Preferences: {type: String},
   selectedPlan: { type: String, enum: ['Bronze', 'Silver', 'Special'], required: true },
   bankCard: { type: String, enum: ['Mastercard', 'Visa', 'Discover', 'American Express'], required: false }, // Optional, as it is based on user selection
   timestamp: { type: Number, default: Date.now },
+  notifications_enabled: { type: Boolean, default: true},
   is_online: { type: Boolean, default: true },
   is_deleted: { type: Boolean, default: false },
   
