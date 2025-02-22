@@ -12,7 +12,7 @@ const transport = nodemailer.createTransport({
   },
 });
 
-// Send Password Reset Email
+// Send Password Reset the email
 const sendPasswordReset = async (email, fullname, resetPasswordCode) => {
   try {
     const info = await transport.sendMail({

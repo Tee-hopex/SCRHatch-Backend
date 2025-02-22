@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const New_item = require('../models/product');
 
-// New Product Endpoint
+// New Product Endpoint 111
 route.post('/new_product', async (req, res) => {
     const { productName, category, price, stock } = req.body;
 
@@ -42,7 +42,7 @@ route.post('/new_product', async (req, res) => {
     }
 });
 
-// Edit Product Endpoint
+// Edit Product Endpoint 111
 route.put('/edit_product/:productName', async (req, res) => {
     const { productName } = req.params;
     const { newProductName, category, price, stock } = req.body;
@@ -77,7 +77,7 @@ route.put('/edit_product/:productName', async (req, res) => {
     }
 });
 
-// View All Products Endpoint
+// View All Products Endpoint 111
 route.get('/view_products', async (req, res) => {
     try {
         const products = await New_item.find();
@@ -94,7 +94,7 @@ route.get('/view_products', async (req, res) => {
     }
 });
 
-// Search Products Endpoint
+// Search Products Endpoint 111
 route.get('/search_products', async (req, res) => {
     try {
         const { query } = req.query; // Get search query from request
@@ -152,6 +152,18 @@ route.post('/buy_product', async (req, res) => {
         product.stock -= quantity;
         await product.save();
 
+        // Create a new sale record with status "approved"
+        const sale = new Sale({
+            productName: product.productName,
+            category: product.category,
+            price: product.price,
+            quantity: quantity,
+            totalAmount: totalAmount,
+            status: 'approved' // or 'pending' if you want manual approval later
+        });
+        await sale.save();
+  
+
         return res.status(200).json({
             status: "ok",
             msg: "Purchase successful",
@@ -169,7 +181,7 @@ route.post('/buy_product', async (req, res) => {
     }
 });
 
-// Delete Product Endpoint
+// Delete Product Endpoint 111
 route.delete('/delete_product/:productName', async (req, res) => {
     const { productName } = req.params;
 
