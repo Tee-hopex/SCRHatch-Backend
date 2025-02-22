@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const New_item = require('../models/product');
 const Sale = require('../models/sales');
+const User = require('../models/user');
 
 
 function verifyToken(req, res, next) {
