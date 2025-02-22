@@ -63,7 +63,7 @@ route.post('/new_product', verifyToken, async (req, res) => {
 });
 
 // Edit Product Endpoint 111
-route.put('/edit_product/:productName', async (req, res) => {
+route.put('/edit_product/:productName',verifyToken, async (req, res) => {
     const { productName } = req.params;
     const { newProductName, category, price, stock } = req.body;
 
@@ -98,7 +98,7 @@ route.put('/edit_product/:productName', async (req, res) => {
 });
 
 // View All Products Endpoint 111
-route.get('/view_products', async (req, res) => {
+route.get('/view_products', verifyToken, async (req, res) => {
     try {
         const products = await New_item.find();
 
@@ -115,7 +115,7 @@ route.get('/view_products', async (req, res) => {
 });
 
 // Search Products Endpoint 111
-route.get('/search_products', async (req, res) => {
+route.get('/search_products', verifyToken, async (req, res) => {
     try {
         const { query } = req.query; // Get search query from request
 
@@ -144,7 +144,7 @@ route.get('/search_products', async (req, res) => {
 });
 
 // Buy Product Endpoint
-route.post('/buy_product', async (req, res) => {
+route.post('/buy_product', verifyToken, async (req, res) => {
     const { productName, quantity } = req.body;
 
     // Validate input
@@ -175,6 +175,7 @@ route.post('/buy_product', async (req, res) => {
         // Create a new sale record with status "approved"
         const sale = new Sale({
             productName: product.productName,
+            userId: req.userId,
             category: product.category,
             price: product.price,
             quantity: quantity,
@@ -202,7 +203,7 @@ route.post('/buy_product', async (req, res) => {
 });
 
 // Delete Product Endpoint 111
-route.delete('/delete_product/:productName', async (req, res) => {
+route.delete('/delete_product/:productName', verifyToken, async (req, res) => {
     const { productName } = req.params;
 
     try {
