@@ -4,6 +4,7 @@ const route = express.Router();
 require('dotenv').config();
 
 const New_item = require('../models/product');
+const Sale = require('../models/sales');
 
 // New Product Endpoint 111
 route.post('/new_product', async (req, res) => {
