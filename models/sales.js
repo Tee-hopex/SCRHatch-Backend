@@ -11,6 +11,7 @@ const salesSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'refunded'],
     default: 'pending'
   },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   saleDate: { type: Date, default: Date.now }
 });
 

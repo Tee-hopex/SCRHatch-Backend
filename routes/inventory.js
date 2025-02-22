@@ -5,9 +5,10 @@ require('dotenv').config();
 
 const New_item = require('../models/product');
 const Sale = require('../models/sales');
+const verifyToken = require('../utils/verifytoken');
 
 // New Product Endpoint 111
-route.post('/new_product', async (req, res) => {
+route.post('/new_product', verifyToken, async (req, res) => {
     const { productName, category, price, stock } = req.body;
 
     // Validation for required fields
@@ -30,7 +31,8 @@ route.post('/new_product', async (req, res) => {
                 productName,
                 category,
                 price,
-                stock
+                stock,
+                userId: req.userId
             });
 
             await new_item.save();
