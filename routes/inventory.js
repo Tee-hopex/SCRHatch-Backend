@@ -153,6 +153,8 @@ route.post('/buy_product', verifyToken, async (req, res) => {
         return res.status(400).json({ status: "error", msg: "Product name and valid quantity are required" });
     }
 
+    console.log("it got here")
+
     try {
         // Find the product by name
         const product = await New_item.findOne({ productName });
@@ -198,7 +200,7 @@ route.post('/buy_product', verifyToken, async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Buy product error:", error);
         res.status(500).json({ status: "error", msg: "An error occurred while processing the purchase", error: error.message });
     }
 });
