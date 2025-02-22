@@ -9,6 +9,8 @@ const User = require('../models/user');
 
 
 function verifyToken(req, res, next) {
+
+    console.log("it got here function")
   const authHeader = req.headers['authorization'];
   // Expected format: "Bearer <token>"
   const token = authHeader && authHeader.split(' ')[1];
@@ -154,6 +156,9 @@ route.post('/buy_product', verifyToken, async (req, res) => {
     }
 
     console.log("it got here")
+    console.log(productName)
+    console.log(quantity)
+    console.log(req.userId)
 
     try {
         // Find the product by name
