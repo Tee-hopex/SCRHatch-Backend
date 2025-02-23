@@ -6,30 +6,13 @@ require('dotenv').config();
 const Leave = require('../models/leave');
 
 
-
-
-function verifyToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    // Expected format: "Bearer <token>"
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) {
-        return res.status(403).json({ status: "error", msg: "No token provided" });
-    }
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-        return res.status(500).json({ status: "error", msg: "Failed to authenticate token" });
-        }
-        // Attach the decoded user id to the request
-        req.userId = decoded._id;
-        next();
-    });
-}
+const verifyToken = require('../middleware/verifyToken');
 
 // Protect all leave routes
-// route.use(verifyToken);
+route.use(verifyToken);
 
 // Endpoint to apply for leave (create a new leave application)
-route.post('/apply_leave', verifyToken, async (req, res) => {
+route.post('/apply_leave', async (req, res) => {
   const { start_date, end_date, reason, name } = req.body;
   
   // Basic validation, ensure all fields are filled
@@ -56,7 +39,7 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
 });
 
 // Endpoint to view leave applications for the logged-in user
-route.get('/view_leaves', verifyToken, async (req, res) => {
+route.get('/view_leaves', async (req, res) => {
   try {
     const leaves = await Leave.find({ user: req.userId }).sort({ appliedAt: -1 });
     if (!leaves.length) {
