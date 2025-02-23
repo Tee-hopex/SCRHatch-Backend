@@ -10,4 +10,5 @@ const leaveSchema = new mongoose.Schema({
   appliedAt: { type: Date, default: Date.now }
 }, collection = 'leaves');
 
-module.exports = mongoose.model('Leave', leaveSchema);
+const model = mongoose.model('Leave', leaveSchema);
+module.exports = model;
