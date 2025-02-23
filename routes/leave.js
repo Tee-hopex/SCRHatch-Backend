@@ -1,8 +1,10 @@
 const express = require('express');
-const route = express.Router();
-const Leave = require('../models/leave');
-require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const route = express.Router();
+require('dotenv').config();
+
+const Leave = require('../models/leave');
+
 
 
 
@@ -68,23 +70,23 @@ route.get('/view_leaves', verifyToken, async (req, res) => {
 });
 
 // (Optional) Endpoint to update a leave application's status (for admin use)
-// route.put('/update_leave/:id', async (req, res) => {
-//   const { status } = req.body;
-//   if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
-//     return res.status(400).json({ status: "error", msg: "Invalid status value" });
-//   }
-//   try {
-//     const leave = await Leave.findById(req.params.id);
-//     if (!leave) {
-//       return res.status(404).json({ status: "error", msg: "Leave application not found" });
-//     }
-//     leave.status = status;
-//     await leave.save();
-//     return res.status(200).json({ status: "ok", msg: "Leave application updated successfully", leave });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ status: "error", msg: "An error occurred while updating leave application", error: error.message });
-//   }
-// });
+route.put('/update_leave/:id', async (req, res) => {
+  const { status } = req.body;
+  if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
+    return res.status(400).json({ status: "error", msg: "Invalid status value" });
+  }
+  try {
+    const leave = await Leave.findById(req.params.id);
+    if (!leave) {
+      return res.status(404).json({ status: "error", msg: "Leave application not found" });
+    }
+    leave.status = status;
+    await leave.save();
+    return res.status(200).json({ status: "ok", msg: "Leave application updated successfully", leave });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: "error", msg: "An error occurred while updating leave application", error: error.message });
+  }
+});
 
 module.exports = route;
