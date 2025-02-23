@@ -1,6 +1,9 @@
 const express = require('express');
 const route = express.Router();
 const Leave = require('../models/leave');
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+
 
 
 function verifyToken(req, res, next) {
@@ -21,10 +24,10 @@ function verifyToken(req, res, next) {
 }
 
 // Protect all leave routes
-route.use(verifyToken);
+// route.use(verifyToken);
 
 // Endpoint to apply for leave (create a new leave application)
-route.post('/apply_leave', async (req, res) => {
+route.post('/apply_leave', verifyToken, async (req, res) => {
   const { start_date, end_date, reason, name } = req.body;
   
   // Basic validation, ensure all fields are filled
@@ -51,7 +54,7 @@ route.post('/apply_leave', async (req, res) => {
 });
 
 // Endpoint to view leave applications for the logged-in user
-route.get('/view_leaves', async (req, res) => {
+route.get('/view_leaves', verifyToken, async (req, res) => {
   try {
     const leaves = await Leave.find({ user: req.userId }).sort({ appliedAt: -1 });
     if (!leaves.length) {
