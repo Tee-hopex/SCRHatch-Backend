@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   // New fields for OTP
   otp: { type: String, required: false }, // OTP will be stored here
   otpExpiration: { type: Date, required: false } // Expiration time for OTP
-});
+}, collection = 'users');
 
 const model = mongoose.model('User', userSchema);
 

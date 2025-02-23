@@ -13,6 +13,6 @@ const salesSchema = new mongoose.Schema({
   },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   saleDate: { type: Date, default: Date.now }
-});
+}, collection = 'sales');
 
 module.exports = mongoose.model('Sale', salesSchema);
