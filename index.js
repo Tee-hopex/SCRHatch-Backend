@@ -33,7 +33,7 @@ app.get('/test', (req, res) => {
 app.use('/auth', require('./routes/auth'))
 app.use('/inventory', require('./routes/inventory'))
 app.use('/sales', require('./routes/sales'))
-// app.use('/leave', require('./routes/leave'))
+app.use('/leave', require('./routes/leave'))
 
 
 
