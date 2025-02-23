@@ -39,7 +39,7 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
 });
 
 // Endpoint to view leave applications for the logged-in user
-route.get('/view_leaves', async (req, res) => {
+route.get('/view_leaves', verifyToken, async (req, res) => {
   try {
     const leaves = await Leave.find({ user: req.userId }).sort({ appliedAt: -1 });
     if (!leaves.length) {
