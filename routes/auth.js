@@ -93,6 +93,32 @@ route.post('/login', loginLimiter, async (req, res) => {
     }
 });
 
+
+// logout endpoint 
+route.post('/logout', async (req, res) => {
+    const { token } = req.body;
+    if (!token) {
+        return res.status(400).send({ status: 'error', msg: 'Token is required' });
+    }
+    try{
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded) {
+            return res.status(401).send({ status: 'error', msg: 'Invalid token' });
+        }
+        const user = await User.findById(decoded._id);
+        if (!user) {
+            return res.status(404).send({ status: 'error', msg: 'User not found' });
+        }
+        user.is_online = false;
+        await user.save();
+        res.status(200).send({ status: 'success', msg: 'You have successfully logged out' });
+
+    } catch(err) {
+        console.error(err);
+        res.status(500).send({ status: 'error', msg: 'Some error occurred', error: err.message });
+    }
+})
+
 // Function to generate a random 8-digit OTP
 const generateOTP = () => {
     const otp = Math.floor(10000000 + Math.random() * 90000000); // Generates a random number between 10000000 and 99999999
