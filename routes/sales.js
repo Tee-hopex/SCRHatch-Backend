@@ -1,13 +1,10 @@
 const express = require('express');
 const route = express.Router();
 const Sale = require('../models/sales');
-const verifyToken = require('../middleware/verifyToken');
 
-// Protect all sales routes
-// route.use(verifyToken);
 
 // View All Sales Endpoint
-route.get('/view_sales', verifyToken, async (req, res) => {
+route.get('/view_sales', async (req, res) => {
   try {
     const sales = await Sale.find().sort({ saleDate: -1 });
     if (!sales.length) {
