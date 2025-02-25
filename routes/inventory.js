@@ -10,7 +10,7 @@ const Sale = require('../models/sales');
 const verifyToken = require('../middleware/verifyToken');
 
 // Protect all inventory routes
-route.use(verifyToken);
+// route.use(verifyToken);
 
 
 
@@ -88,7 +88,7 @@ route.put('/edit_product/:productName',verifyToken, async (req, res) => {
 });
 
 // View All Products Endpoint 
-route.get('/view_products', async (req, res) => {
+route.get('/view_products', verifyToken, async (req, res) => {
     try {
         const products = await New_item.find();
 

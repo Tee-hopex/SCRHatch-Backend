@@ -9,7 +9,7 @@ const Leave = require('../models/leave');
 const verifyToken = require('../middleware/verifyToken');
 
 // Protect all leave routes
-route.use(verifyToken);
+// route.use(verifyToken);
 
 // Endpoint to apply for leave (create a new leave application)
 route.post('/apply_leave', verifyToken, async (req, res) => {
