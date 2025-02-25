@@ -2,6 +2,9 @@ const express = require('express');
 const route = express.Router();
 const Sale = require('../models/sales');
 
+// Protect all sales routes
+route.use(verifyToken);
+
 // View All Sales Endpoint
 route.get('/view_sales', async (req, res) => {
   try {
