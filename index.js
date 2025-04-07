@@ -23,6 +23,15 @@ const app = express();
 const PORT = process.env.PORT;
 const cors = require("cors")
 
+const prometheusMiddleware = require('prometheus-api-metrics');
+
+// Enable default Prometheus metrics + custom route metrics
+app.use(prometheusMiddleware({
+    metricsPath: '/metrics', // Prometheus will scrape this endpoint
+    collectDefaultMetrics: true,
+    requestDurationBuckets: [0.1, 0.5, 1, 1.5] // Customize as needed
+  }));
+
 app.use(cors())
 
 app.use(express.json());
