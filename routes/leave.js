@@ -31,6 +31,18 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
     });
     
     await newLeave.save();
+
+    // Optionally, you can send a notification to the admin or relevant personnel here
+    const notification = new Notification({
+      userId: req.userId,
+      message: `Leave application submitted by ${name} from ${start_date} to ${end_date}`,
+      timestamp: Date.now(),
+      isRead: false
+    });
+    await notification.save();
+
+
+
     return res.status(201).json({ status: "ok", msg: "Leave application submitted successfully", leave: newLeave });
   } catch (error) {
     console.error(error);
@@ -65,6 +77,16 @@ route.put('/update_leave/:id', async (req, res) => {
     }
     leave.status = status;
     await leave.save();
+
+    // Optionally, you can send a notification to the user about the status update here
+    const notification = new Notification({
+      userId: leave.user,
+      message: `Your leave application has been ${status}`,
+      timestamp: Date.now(),
+      isRead: false
+    });
+    await notification.save();
+
     return res.status(200).json({ status: "ok", msg: "Leave application updated successfully", leave });
   } catch (error) {
     console.error(error);

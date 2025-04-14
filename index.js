@@ -1,5 +1,9 @@
 const mongoose= require("mongoose");
 require("dotenv").config()
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT;
+const cors = require("cors")
 
 mongoose.connect(process.env.MONGO_URI)
     .catch(error => console.log('DB Connection error: ' +error));
@@ -17,11 +21,6 @@ con.on('disconnected', error => {
     console.log(`Mongoose lost connection with MongoDB:
     ${error}`);
 });
-
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT;
-const cors = require("cors")
 
 const prometheusMiddleware = require('prometheus-api-metrics');
 
@@ -44,9 +43,6 @@ app.use('/inventory', require('./routes/inventory'))
 app.use('/sales', require('./routes/sales'))
 app.use('/leave', require('./routes/leave'))
 app.use('/profile', require('./routes/profile'))
-
-
-
 
 // Start server
 app.listen(PORT, () => {

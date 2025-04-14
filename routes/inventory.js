@@ -5,14 +5,10 @@ require('dotenv').config();
 
 const New_item = require('../models/product');
 const Sale = require('../models/sales');
-
+const Statistics = require('../models/statistics');
+const notifications = require('../models/notification');
 
 const verifyToken = require('../middleware/verifyToken');
-
-// Protect all inventory routes
-// route.use(verifyToken);
-
-
 
 // New Product Endpoint 
 route.post('/new_product', verifyToken, async (req, res) => {
@@ -43,6 +39,16 @@ route.post('/new_product', verifyToken, async (req, res) => {
             });
 
             await new_item.save();
+
+            // Create a new notification for the user
+            const notification = new notifications({
+                userId: req.userId,
+                message: `New product ${productName} created successfully`,
+                isRead: false,
+                timestamp: Date.now()
+            });
+            await notification.save();
+
             return res.status(201).json({ status: 'ok', msg: 'Product created successfully', new_item });
         }
 
@@ -79,6 +85,15 @@ route.put('/edit_product/:productName',verifyToken, async (req, res) => {
         // Save the updated product
         await product.save();
 
+        // Create a new notification for the user
+        const notification = new notifications({
+            userId: req.userId,
+            message: `Product ${productName} updated successfully`,
+            timestamp: Date.now(),
+            isRead: false
+        });
+        await notification.save();
+
         return res.status(200).json({ status: "ok", msg: "Product updated successfully", updatedProduct: product });
 
     } catch (error) {
@@ -95,6 +110,15 @@ route.get('/view_products', verifyToken, async (req, res) => {
         if (!products.length) {
             return res.status(404).json({ status: "error", msg: "No products found" });
         }
+
+        // Create a new notification for the user
+        const notification = new notifications({
+            userId: req.userId,
+            message: `Products retrieved successfully by ${req.userId}`,
+            timestamp: Date.now(),
+            isRead: false
+        });
+        await notification.save();
 
         return res.status(200).json({ status: "ok", msg: "Products retrieved successfully", products });
 
@@ -178,6 +202,36 @@ route.post('/buy_product', verifyToken, async (req, res) => {
             status: 'approved' // or 'pending' if you want manual approval later
         });
         await sale.save();
+
+        // Update statistics
+        const statistics = await Statistics.findOne({});
+        if (statistics) {
+            statistics.totalSales += totalAmount;
+            statistics.totalTransactions += 1;
+            statistics.itemsInStock -= quantity; 
+            statistics.lastUpdated = Date.now(); // Update lastUpdated timestamp
+            await statistics.save();
+        }
+
+        if (!statistics) {
+            const newStatistics = new Statistics({
+                totalSales: totalAmount,
+                totalTransactions: 1,
+                itemsInStock: initialStock - quantity, // Replace `initialStock` with the actual value
+                lastUpdated: Date.now()
+            });
+            await newStatistics.save();
+        }
+
+        // Create a new notification for the user
+        const notification = new notifications({
+            userId: req.userId,
+            message: `Purchase successful for ${productName}. Total amount: $${totalAmount}`,
+            timestamp: Date.now(),
+            isRead: false
+        });
+        await notification.save();
+
   
 
         return res.status(200).json({
@@ -198,7 +252,7 @@ route.post('/buy_product', verifyToken, async (req, res) => {
 });
 
 // Delete Product Endpoint
-route.delete('/delete_product/:productName', async (req, res) => {
+route.delete('/delete_product/:productName', verifyToken, async (req, res) => {
     const { productName } = req.params;
 
     try {
@@ -208,6 +262,15 @@ route.delete('/delete_product/:productName', async (req, res) => {
         if (!deletedProduct) {
             return res.status(404).json({ status: "error", msg: "Product not found" });
         }
+
+        // Create a new notification for the user
+        const notification = new notifications({
+            userId: req.userId,
+            message: `Product ${productName} deleted successfully`,
+            timestamp: Date.now(),
+            isRead: false
+        });
+        await notification.save();
 
         return res.status(200).json({ status: "ok", msg: "Product deleted successfully", deletedProduct });
 

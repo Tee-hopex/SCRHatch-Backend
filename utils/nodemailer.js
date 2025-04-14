@@ -56,7 +56,7 @@ const sendPasswordReset = async (email, fullname, resetPasswordCode) => {
 };
 
 // Send OTP Email
-const sendOTP = async (email, otp, verificationLink) => {
+const sendOTP = async (email, verificationCode) => {
     try {
         const otpHtml = `
           <!DOCTYPE html>
@@ -149,14 +149,11 @@ const sendOTP = async (email, otp, verificationLink) => {
 
                       <!-- OTP -->
                       <div class="otp">
-                          ${otp}  <!-- OTP dynamically injected here -->
+                          ${verificationCode}  <!-- OTP dynamically injected here -->
                       </div>
 
                       <p>This OTP is valid for 10 minutes. Please use it to complete your verification.</p>
 
-                      <!-- Alternative Link for OTP Verification -->
-                      <p>If you prefer, you can click the link below to verify your identity:</p>
-                      <a href="${verificationLink}" class="link">Verify Your Account</a>
                   </div>
 
                   <!-- Footer -->

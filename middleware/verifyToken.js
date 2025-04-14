@@ -2,11 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 
-
-
 function verifyToken(req, res, next) {
-
-    console.log("it got here function")
   const authHeader = req.headers['authorization'];
   // Expected format: "Bearer <token>"
   const token = authHeader && authHeader.split(' ')[1];

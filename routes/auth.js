@@ -80,11 +80,23 @@ route.post('/login', loginLimiter, async (req, res) => {
         }
 
         // Generate JWT token for login
-        const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName}, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName}, 
+            process.env.JWT_SECRET, { expiresIn: '1h' });
 
         user.is_online = true;
         await user.save();
 
+        //notify user of login
+        const notification = new Notification({
+            userId: user._id,
+            message: `${user._id} have successfully logged in`,
+            timestamp: Date.now(),
+            isRead: false
+        });
+
+        await notification.save();
+
+        // Send success response with user data and token
         res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', user, token });
         
     } catch (error) {
@@ -111,6 +123,16 @@ route.post('/logout', async (req, res) => {
         }
         user.is_online = false;
         await user.save();
+
+        // Notify user of logout
+        notification = new Notification({
+            userId: user._id,
+            message: `${user._id} have successfully logged out`,
+            timestamp: Date.now(),
+            isRead: false
+        });
+        await notification.save();
+
         res.status(200).send({ status: 'success', msg: 'You have successfully logged out' });
 
     } catch(err) {
@@ -119,50 +141,20 @@ route.post('/logout', async (req, res) => {
     }
 })
 
-// Function to generate a random 8-digit OTP
-const generateOTP = () => {
-    const otp = Math.floor(10000000 + Math.random() * 90000000); // Generates a random number between 10000000 and 99999999
-    return otp.toString();
-};
-
-// Function to store OTP in the database
-const storeOTPInDatabase = async (userId, otp) => {
-    const expirationTime = Date.now() + 10 * 60 * 1000; // Set OTP expiration time (10 minutes)
-  
-    // Store OTP and expiration time in the database
-    await User.findByIdAndUpdate(userId, {
-      otp: otp,
-      otpExpiration: new Date(expirationTime),
-    });
-};
 
 // Endpoint to send OTP
 route.post('/send_otp', async (req, res) => {
-    const { token, email } = req.body; // Destructuring the request body to get token and email
+    const { email, otp } = req.body; // Destructuring the request body to get token and email
 
-    // Check if token or email is missing
-    if (!token || !email) {
-        return res.status(400).send({ status: "error", msg: "token and email must be provided" });
+    // Check if email is missing
+    if (!email || !otp) {
+        return res.status(400).send({ status: "error", msg: "email and OTP must be provided" });
     }
 
     try {
-        // JWT token verification
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decoded) {
-            return res.status(401).send({ status: "error", msg: "Invalid token" });
-        }
-
-        // Generate OTP
-        const otp = generateOTP();
-
-        // Store OTP in the database for the user
-        await storeOTPInDatabase(decoded._id, otp);
-
-        // Generate the alternative verification link
-        const verificationLink = `https://scrhatch.com/verify?userId=${decoded._id}&otp=${otp}`;
 
         // Send OTP via email (ensure the sendOTP function returns a promise)
-        await sendOTP(email, otp, verificationLink);
+        await sendOTP(email, otp);
 
         // Send success response
         return res.status(200).send({ status: 'ok', msg: 'OTP sent successfully' });
@@ -208,7 +200,8 @@ route.get('/verify', async (req, res) => {
       res.status(500).send({ status: "error", msg: "Internal server error" });
     }
 });
-  
+
+
 
 
 module.exports = route;
