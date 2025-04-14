@@ -153,6 +153,7 @@ route.post('/send_otp', async (req, res) => {
 
     try {
 
+        console.log(email, otp)
         // Send OTP via email (ensure the sendOTP function returns a promise)
         await sendOTP(email, otp);
 
