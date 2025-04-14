@@ -43,6 +43,7 @@ route.post('/new_product', verifyToken, async (req, res) => {
             // Create a new notification for the user
             const notification = new notifications({
                 userId: req.userId,
+                username: `${req.userfirstName} ${req.userlastName}`,
                 message: `New product ${productName} created successfully`,
                 isRead: false,
                 timestamp: Date.now()
@@ -88,6 +89,7 @@ route.put('/edit_product/:productName',verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
+            username: `${req.userfirstName} ${req.userlastName}`,
             message: `Product ${productName} updated successfully`,
             timestamp: Date.now(),
             isRead: false
@@ -114,7 +116,8 @@ route.get('/view_products', verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
-            message: `Products retrieved successfully by ${req.userId}`,
+            username: `${req.userfirstName} ${req.userlastName}`,
+            message: `Products retrieved successfully by ${user.firstName} ${user.lastName}`,
             timestamp: Date.now(),
             isRead: false
         });
@@ -226,6 +229,7 @@ route.post('/buy_product', verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
+            username: `${req.userfirstName} ${req.userlastName}`,
             message: `Purchase successful for ${productName}. Total amount: $${totalAmount}`,
             timestamp: Date.now(),
             isRead: false
@@ -266,6 +270,7 @@ route.delete('/delete_product/:productName', verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
+            username: `${req.userfirstName} ${req.userlastName}`,
             message: `Product ${productName} deleted successfully`,
             timestamp: Date.now(),
             isRead: false

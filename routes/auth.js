@@ -6,6 +6,7 @@ const route = express.Router();
 require('dotenv').config();
 
 const User = require('../models/user');
+const Notification = require('../models/notification');
 
 const {sendPasswordReset, sendOTP} = require('../utils/nodemailer')
 
@@ -89,7 +90,8 @@ route.post('/login', loginLimiter, async (req, res) => {
         //notify user of login
         const notification = new Notification({
             userId: user._id,
-            message: `${user._id} have successfully logged in`,
+            username: `${user.firstName} ${user.lastName}`,
+            message: `${user.firstName} ${user.lastName} have successfully logged in`,
             timestamp: Date.now(),
             isRead: false
         });
@@ -127,7 +129,8 @@ route.post('/logout', async (req, res) => {
         // Notify user of logout
         notification = new Notification({
             userId: user._id,
-            message: `${user._id} have successfully logged out`,
+            username: `${user.firstName} ${user.lastName}`,
+            message: `${user.firstName} ${user.lastName} have successfully logged out`,
             timestamp: Date.now(),
             isRead: false
         });

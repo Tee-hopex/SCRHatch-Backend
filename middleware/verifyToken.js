@@ -15,6 +15,9 @@ function verifyToken(req, res, next) {
     }
     // Attach the decoded user id to the request
     req.userId = decoded._id;
+    req.userfirstName = decoded.firstName;
+    req.userlastName = decoded.lastName;
+    req.useremail = decoded.email;
     next();
   });
 }

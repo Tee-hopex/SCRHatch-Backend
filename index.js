@@ -43,6 +43,7 @@ app.use('/inventory', require('./routes/inventory'))
 app.use('/sales', require('./routes/sales'))
 app.use('/leave', require('./routes/leave'))
 app.use('/profile', require('./routes/profile'))
+app.use('/audit', require('./routes/audit'))
 
 // Start server
 app.listen(PORT, () => {

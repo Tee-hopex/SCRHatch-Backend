@@ -35,6 +35,7 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
     // Optionally, you can send a notification to the admin or relevant personnel here
     const notification = new Notification({
       userId: req.userId,
+      username: `${req.userfirstName} ${req.userlastName}`,
       message: `Leave application submitted by ${name} from ${start_date} to ${end_date}`,
       timestamp: Date.now(),
       isRead: false
@@ -65,7 +66,7 @@ route.get('/view_leaves', verifyToken, async (req, res) => {
 });
 
 // (Optional) Endpoint to update a leave application's status (for admin use)
-route.put('/update_leave/:id', async (req, res) => {
+route.put('/update_leave/:id', verifyToken, async (req, res) => {
   const { status } = req.body;
   if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
     return res.status(400).json({ status: "error", msg: "Invalid status value" });
@@ -81,6 +82,7 @@ route.put('/update_leave/:id', async (req, res) => {
     // Optionally, you can send a notification to the user about the status update here
     const notification = new Notification({
       userId: leave.user,
+      username: `${req.userfirstName} ${req.userlastName}`,
       message: `Your leave application has been ${status}`,
       timestamp: Date.now(),
       isRead: false
