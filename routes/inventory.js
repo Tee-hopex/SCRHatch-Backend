@@ -105,23 +105,13 @@ route.put('/edit_product/:productName',verifyToken, async (req, res) => {
 });
 
 // View All Products Endpoint 
-route.get('/view_products', verifyToken, async (req, res) => {
+route.get('/view_products', async (req, res) => {
     try {
         const products = await New_item.find();
 
         if (!products.length) {
             return res.status(404).json({ status: "error", msg: "No products found" });
         }
-
-        // Create a new notification for the user
-        const notification = new notifications({
-            userId: req.userId,
-            username: `${req.userfirstName} ${req.userlastName}`,
-            message: `Products retrieved successfully by ${user.firstName} ${user.lastName}`,
-            timestamp: Date.now(),
-            isRead: false
-        });
-        await notification.save();
 
         return res.status(200).json({ status: "ok", msg: "Products retrieved successfully", products });
 
