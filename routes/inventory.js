@@ -141,6 +141,23 @@ route.put('/edit_product/:productName',verifyToken, async (req, res) => {
         });
         await notification.save();
 
+        // Update statistics
+        let statistics = await Statistics.findOne({});
+        if (statistics) {
+            statistics.itemsInStock += stock; // Update the stock count
+            statistics.lastUpdated = Date.now();
+        } else {
+            // Calculate the total stock dynamically
+            const allProducts = await New_item.find();
+            const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0);
+
+            statistics = new Statistics({
+                itemsInStock: totalStock + stock,
+                lastUpdated: Date.now()
+            });
+        }
+        await statistics.save();
+
         return res.status(200).json({ status: "ok", msg: "Product updated successfully", updatedProduct: product });
 
     } catch (error) {
@@ -316,6 +333,23 @@ route.delete('/delete_product/:productName', verifyToken, async (req, res) => {
             isRead: false
         });
         await notification.save();
+
+        // Update statistics
+        let statistics = await Statistics.findOne({});
+        if (statistics) {
+            statistics.itemsInStock -= deletedProduct.stock; // Update the stock count
+            statistics.lastUpdated = Date.now();
+        } else {
+            // Calculate the total stock dynamically
+            const allProducts = await New_item.find();
+            const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0);
+
+            statistics = new Statistics({
+                itemsInStock: totalStock - deletedProduct.stock,
+                lastUpdated: Date.now()
+            });
+        }
+        await statistics.save();
 
         return res.status(200).json({ status: "ok", msg: "Product deleted successfully", deletedProduct });
 
