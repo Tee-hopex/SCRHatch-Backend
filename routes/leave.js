@@ -48,7 +48,7 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
 
     return res.status(201).json({ status: "ok", msg: "Leave application submitted successfully", leave: newLeave });
   } catch (error) {
-    console.error(error);
+    console.error(error.name);
     return res.status(500).json({ status: "error", msg: "An error occurred while submitting the leave application", error: error.message });
   }
 });
