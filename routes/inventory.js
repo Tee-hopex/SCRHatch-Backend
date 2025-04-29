@@ -65,6 +65,7 @@ route.post('/new_product', verifyToken, async (req, res) => {
                     lastUpdated: Date.now()
                 });
             }
+            await statistics.save();
 
             return res.status(201).json({ status: 'ok', msg: 'Product created successfully', new_item });
         }
