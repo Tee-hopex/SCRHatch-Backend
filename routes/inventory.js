@@ -27,6 +27,34 @@ route.post('/new_product', verifyToken, async (req, res) => {
             // Increment stock if product exists
             existingProduct.stock += stock;
             await existingProduct.save();
+
+            // Create a new notification for the user
+            const notification = new notifications({
+                userId: req.userId,
+                username: `${req.userfirstName} ${req.userlastName}`,
+                message: `Stock updated for ${productName}. New stock: ${existingProduct.stock}`,
+                isRead: false,
+                timestamp: Date.now()
+            });
+            await notification.save();
+
+            // Update statistics
+            let statistics = await Statistics.findOne({});
+            if (statistics) {
+                statistics.itemsInStock += stock;
+                statistics.lastUpdated = Date.now();
+            } else {
+                // Calculate the total stock dynamically
+                const allProducts = await New_item.find();
+                const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0);
+
+                statistics = new Statistics({
+                    itemsInStock: totalStock + stock,
+                    lastUpdated: Date.now()
+                });
+            }
+            await statistics.save();
+
             return res.status(200).json({ status: "ok", msg: "Stock updated successfully", updatedProduct: existingProduct });
         } else {
             // Create a new Product if it doesn't exist
