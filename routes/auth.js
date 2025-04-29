@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const User = require('../models/user');
 const Notification = require('../models/notification');
+const Statistics = require('../models/statistics');
 
 const {sendPasswordReset, sendOTP} = require('../utils/nodemailer')
 
@@ -54,6 +55,20 @@ route.post('/sign_up', async (req, res) => {
         user.bankCard = bankCard;
 
         await user.save();
+
+        // increment the numberOfAccounts in the statistics collection
+        const statistics = await Statistics.findOne({});
+        if (statistics) {
+            statistics.numberOfAccounts += 1;
+            await statistics.save();
+        } else {
+            // If no statistics document exists, create one
+            const newStatistics = new Statistics({ numberOfAccounts: 1 });
+            await newStatistics.save();
+        }
+        
+
+
         return res.status(200).send({ status: 'ok', msg: 'User created successfully', user });
 
     } catch (error) {

@@ -201,28 +201,25 @@ route.post('/buy_product', verifyToken, async (req, res) => {
         await sale.save();
 
         // Update statistics
-        const statistics = await Statistics.findOne({});
+        let statistics = await Statistics.findOne({});
         if (statistics) {
             statistics.totalSales += totalAmount;
             statistics.totalTransactions += 1;
-            statistics.itemsInStock -= quantity; 
-            statistics.lastUpdated = Date.now(); // Update lastUpdated timestamp
-            await statistics.save();
-        }
-
-        if (!statistics) {
+            statistics.itemsInStock -= quantity;
+            statistics.lastUpdated = Date.now();
+        } else {
             // Calculate the total stock dynamically
-            const allProducts = await New_item.find(); // Fetch all products
-            const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0); // Sum up the stock of all products
-        
-            const newStatistics = new Statistics({
+            const allProducts = await New_item.find();
+            const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0);
+
+            statistics = new Statistics({
                 totalSales: totalAmount,
                 totalTransactions: 1,
-                itemsInStock: totalStock - quantity, // Subtract the purchased quantity
+                itemsInStock: totalStock - quantity,
                 lastUpdated: Date.now()
             });
-            await newStatistics.save();
         }
+        await statistics.save();
 
         // Create a new notification for the user
         const notification = new notifications({
