@@ -154,6 +154,10 @@ route.get('/search_products', async (req, res) => {
 route.post('/buy_product', verifyToken, async (req, res) => {
     const { productName, quantity } = req.body;
 
+    console.log("it got here")
+    console.log(productName)
+    console.log(quantity)
+
     // Validate input
     if (!productName || !quantity || quantity <= 0) {
         return res.status(400).json({ status: "error", msg: "Product name and valid quantity are required" });

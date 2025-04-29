@@ -66,7 +66,7 @@ route.get('/view_leaves', verifyToken, async (req, res) => {
     }
     return res.status(200).json({ status: "ok", msg: "Leaves retrieved successfully", leaves });
   } catch (error) {
-    console.error(error);
+    console.error(error.name);
     return res.status(500).json({ status: "error", msg: "An error occurred while fetching leave applications", error: error.message });
   }
 });
