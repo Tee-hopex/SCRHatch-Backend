@@ -211,10 +211,14 @@ route.post('/buy_product', verifyToken, async (req, res) => {
         }
 
         if (!statistics) {
+            // Calculate the total stock dynamically
+            const allProducts = await New_item.find(); // Fetch all products
+            const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0); // Sum up the stock of all products
+        
             const newStatistics = new Statistics({
                 totalSales: totalAmount,
                 totalTransactions: 1,
-                itemsInStock: initialStock - quantity, // Replace `initialStock` with the actual value
+                itemsInStock: totalStock - quantity, // Subtract the purchased quantity
                 lastUpdated: Date.now()
             });
             await newStatistics.save();
