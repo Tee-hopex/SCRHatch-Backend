@@ -149,6 +149,10 @@ route.post('/logout', async (req, res) => {
 route.post('/send_otp', async (req, res) => {
     const { email, otp } = req.body; // Destructuring the request body to get token and email
 
+    //testing
+
+    console.log("Sending OTP to:", email, "with OTP:", otp);
+
     // Check if email is missing
     if (!email || !otp) {
         return res.status(400).send({ status: "error", msg: "email and OTP must be provided" });
@@ -156,12 +160,12 @@ route.post('/send_otp', async (req, res) => {
 
     try {
 
-        console.log(email, otp)
         // Send OTP via email (ensure the sendOTP function returns a promise)
         await sendOTP(email, otp);
+        console.log("OTP sent successfully to:", email);
 
         // Send success response
-        return res.status(200).send({ status: 'ok', msg: 'OTP sent successfully' });
+        return res.status(200).send({ status: 'ok', msg: 'OTP sent successfully', email });
 
     } catch (error) {
         console.error(error);
