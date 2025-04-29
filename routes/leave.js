@@ -56,7 +56,11 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
 // Endpoint to view leave applications for the logged-in user
 route.get('/view_leaves', verifyToken, async (req, res) => {
   try {
-    const leaves = await Leave.find({ user: req.userId }).sort({ appliedAt: -1 });
+    // const leaves = await Leave.find({ user: req.userId }).sort({ appliedAt: -1 });
+
+    //fetch all leaves
+    const leaves = await Leave.find({}).sort({ appliedAt: -1 }).populate('user', 'firstName lastName email role department');
+
     if (!leaves.length) {
       return res.status(404).json({ status: "error", msg: "No leave applications found" });
     }
