@@ -50,6 +50,22 @@ route.post('/new_product', verifyToken, async (req, res) => {
             });
             await notification.save();
 
+            // Update statistics
+            let statistics = await Statistics.findOne({});
+            if (statistics) {
+                statistics.itemsInStock += stock;
+                statistics.lastUpdated = Date.now();
+            } else {
+                // Calculate the total stock dynamically
+                const allProducts = await New_item.find();
+                const totalStock = allProducts.reduce((sum, product) => sum + product.stock, 0);
+
+                statistics = new Statistics({
+                    itemsInStock: totalStock + stock,
+                    lastUpdated: Date.now()
+                });
+            }
+
             return res.status(201).json({ status: 'ok', msg: 'Product created successfully', new_item });
         }
 
