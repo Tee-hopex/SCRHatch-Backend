@@ -20,10 +20,10 @@ const loginLimiter = rateLimit({
 
 // Signup endpoint
 route.post('/sign_up', async (req, res) => {
-    const { firstName, lastName, businessName, email, phoneNumber, businessBirthDate, password, verifyPassword, selectedPlan, bankCard } = req.body;
+    const { firstName, lastName, businessName, role, email, phoneNumber, businessBirthDate, password, verifyPassword, selectedPlan, bankCard } = req.body;
 
     // Validation for required fields 
-    if (!password || !firstName || !lastName || !businessName || !email || !phoneNumber || !businessBirthDate || !verifyPassword || !selectedPlan) {
+    if (!password || !firstName || !lastName || !role || !businessName || !email || !phoneNumber || !businessBirthDate || !verifyPassword || !selectedPlan) {
         return res.status(400).send({ "status": "error", "msg": "All fields must be filled" });
     }
 
@@ -48,6 +48,7 @@ route.post('/sign_up', async (req, res) => {
         user.lastName = lastName;
         user.businessName = businessName;
         user.email = email;
+        user.role = role;
         user.phoneNumber = phoneNumber;
         user.businessBirthDate = new Date(businessBirthDate); // Ensure it's a Date object
         user.password = hashedPassword;
