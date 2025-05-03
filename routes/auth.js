@@ -58,8 +58,8 @@ route.post('/sign_up', async (req, res) => {
         user.selectedPlan = selectedPlan;
         user.bankCard = bankCard;
 
-        // Generate 8-digit OTP and expiration time
-        const otp = Math.floor(10000000 + Math.random() * 90000000).toString(); // Generate a random 8-digit OTP      
+        // Generate 5-digit OTP and expiration time
+        const otp = Math.floor(10000 + Math.random() * 90000).toString(); // Generate a random 5-digit OTP
         const otpExpiration = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
         user.otp = otp;
         user.otpExpiration = otpExpiration;
