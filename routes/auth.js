@@ -205,7 +205,7 @@ route.post('/send_otp', async (req, res) => {
 });
 
 
-route.get('/verify', async (req, res) => {
+route.post('/verify', async (req, res) => {
     const { _id, otp } = req.query; // Get userId and otp from query parameters
   
     // Check if the userId or otp is missing
