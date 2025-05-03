@@ -58,14 +58,14 @@ route.post('/sign_up', async (req, res) => {
         user.selectedPlan = selectedPlan;
         user.bankCard = bankCard;
 
-        //generate 8 digits OTP and expiration time
+        // Generate 8-digit OTP and expiration time
         const otp = Math.floor(10000000 + Math.random() * 90000000).toString(); // Generate a random 8-digit OTP      
         const otpExpiration = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
         user.otp = otp;
         user.otpExpiration = otpExpiration;
         await user.save();
 
-        // increment the numberOfAccounts in the statistics collection
+        // Increment the numberOfAccounts in the statistics collection
         const statistics = await Statistics.findOne({});
         if (statistics) {
             statistics.numberOfAccounts += 1;
@@ -75,10 +75,17 @@ route.post('/sign_up', async (req, res) => {
             const newStatistics = new Statistics({ numberOfAccounts: 1 });
             await newStatistics.save();
         }
-        
 
+        // Send OTP email
+        try {
+            await sendOTP1(email, otp); // Call the sendOTP1 function to send the OTP email
+            console.log(`OTP sent successfully to ${email}`);
+        } catch (error) {
+            console.error(`Failed to send OTP to ${email}:`, error);
+            return res.status(500).send({ status: 'error', msg: 'Failed to send OTP. Please try again.' });
+        }
 
-        return res.status(200).send({ status: 'ok', msg: 'User created successfully', user });
+        return res.status(200).send({ status: 'ok', msg: 'User created successfully. OTP sent to email.', user });
 
     } catch (error) {
         console.error(error);
