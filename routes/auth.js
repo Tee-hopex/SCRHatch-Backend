@@ -3,13 +3,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const route = express.Router();
+
 require('dotenv').config();
 
 const User = require('../models/user');
 const Notification = require('../models/notification');
 const Statistics = require('../models/statistics');
 
-const {sendPasswordReset, sendOTP1} = require('../utils/nodemailer')
+const {sendOTP1} = require('../utils/nodemailer')
 
 // Rate limiting for login attempts (to prevent brute-force attacks)
 const loginLimiter = rateLimit({

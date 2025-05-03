@@ -38,7 +38,7 @@ app.use(express.json());
 app.get('/test', (req, res) => {
     res.json({ message: 'Test route works!' });
 });
-// app.use('/auth', require('./routes/auth'))
+app.use('/auth', require('./routes/auth'))
 app.use('/inventory', require('./routes/inventory'))
 app.use('/sales', require('./routes/sales'))
 app.use('/leave', require('./routes/leave'))
