@@ -253,7 +253,7 @@ route.get('/dashboard-stats', async (req, res) => {
             status: 'success',
             total_sales: statistics.totalSales,
             transactions: statistics.totalTransactions,
-            customers: statistics.customers,
+            pendingLeaves: statistics.pendingLeaves,
             items_in_stock: statistics.itemsInStock
         });
     } catch (error) {
