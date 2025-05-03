@@ -11,7 +11,7 @@ const statisticsSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
-    totalCustomers: {
+    pendingLeaves: {
         type: Number,
         required: true,
         default: 0

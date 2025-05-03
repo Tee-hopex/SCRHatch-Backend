@@ -240,6 +240,28 @@ route.get('/verify', async (req, res) => {
 });
 
 
+// Endpoint to fetch dashboard statistics
+route.get('/dashboard-stats', async (req, res) => {
+    try {
+        const statistics = await Statistics.findOne({});
+        if (!statistics) {
+            return res.status(404).send({ status: 'error', msg: 'Statistics not found' });
+        }
+
+        // Send the statistics data as a response
+        res.status(200).send({
+            status: 'success',
+            total_sales: statistics.totalSales,
+            transactions: statistics.totalTransactions,
+            customers: statistics.customers,
+            items_in_stock: statistics.itemsInStock
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ status: 'error', msg: 'Some error occurred', error: error.message });
+    }
+});
+
 
 
 module.exports = route;
