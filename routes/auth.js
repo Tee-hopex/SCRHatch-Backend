@@ -49,6 +49,7 @@ route.post('/sign_up', async (req, res) => {
         const user = new User();
         user.firstName = firstName;
         user.lastName = lastName;
+        user.fullName = `${firstName} ${lastName}`
         user.businessName = businessName;
         user.email = email;
         user.role = role;
@@ -116,6 +117,7 @@ route.post('/login', loginLimiter, async (req, res) => {
             process.env.JWT_SECRET, { expiresIn: '1h' });
 
         user.is_online = true;
+        user.last_login = Date.now()
         await user.save();
 
         //notify user of login

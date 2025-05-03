@@ -62,7 +62,7 @@ route.get('/view_leaves', async (req, res) => {
     const leaves = await Leave.find({}).sort({ appliedAt: -1 }).populate('user', 'firstName lastName email role department');
 
     if (!leaves.length) {
-      return res.status(404).json({ status: "error", msg: "No leave applications found" });
+      res.status(404).json({ status: "error", msg: "No leave applications found" });
     }
     return res.status(200).json({ status: "ok", msg: "Leaves retrieved successfully", leaves });
   } catch (error) {

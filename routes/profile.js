@@ -13,6 +13,9 @@ route.get('/', verifyToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({ status: "error", msg: "User not found" });
     }
+
+    
+
     return res.status(200).json({ status: "ok", msg: "Profile retrieved", user });
   } catch (error) {
     console.error(error);
@@ -100,30 +103,5 @@ route.put('/notifications/:id', verifyToken, async (req, res) => {
     return res.status(500).json({ status: "error", msg: "Error marking notification as read", error: error.message });
   }
 });
-
-// // Delete all notifications
-// route.delete('/notifications', verifyToken, async (req, res) => {
-//   try {
-//     await Notification.deleteMany({ userId: req.userId });
-//     return res.status(200).json({ status: "ok", msg: "All notifications deleted successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ status: "error", msg: "Error deleting notifications", error: error.message });
-//   }
-// });
-
-// // Delete a specific notification
-// route.delete('/notifications/:id', verifyToken, async (req, res) => {
-//   try {
-//     const notification = await Notification.findByIdAndDelete(req.params.id);
-//     if (!notification) {
-//       return res.status(404).json({ status: "error", msg: "Notification not found" });
-//     }
-//     return res.status(200).json({ status: "ok", msg: "Notification deleted successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ status: "error", msg: "Error deleting notification", error: error.message });
-//   }
-// });
 
 module.exports = route;
