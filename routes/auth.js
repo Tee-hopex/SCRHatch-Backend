@@ -27,6 +27,8 @@ route.post('/sign_up', async (req, res) => {
         return res.status(400).send({ "status": "error", "msg": "All fields must be filled" });
     }
 
+    console.log("Received signup request:", req.body);
+
     // Check if passwords match
     if (password !== verifyPassword) {
         return res.status(400).send({ "status": "error", "msg": "Passwords do not match" });
