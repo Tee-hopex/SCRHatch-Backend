@@ -9,7 +9,7 @@ const User = require('../models/user');
 const Notification = require('../models/notification');
 const Statistics = require('../models/statistics');
 
-const {sendPasswordReset, sendOTP} = require('../utils/nodemailer')
+const {sendPasswordReset, sendOTP1} = require('../utils/nodemailer')
 
 // Rate limiting for login attempts (to prevent brute-force attacks)
 const loginLimiter = rateLimit({
@@ -55,6 +55,11 @@ route.post('/sign_up', async (req, res) => {
         user.selectedPlan = selectedPlan;
         user.bankCard = bankCard;
 
+        //generate 8 digits OTP and expiration time
+        const otp = Math.floor(10000000 + Math.random() * 90000000).toString(); // Generate a random 8-digit OTP      
+        const otpExpiration = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+        user.otp = otp;
+        user.otpExpiration = otpExpiration;
         await user.save();
 
         // increment the numberOfAccounts in the statistics collection
@@ -177,7 +182,7 @@ route.post('/send_otp', async (req, res) => {
     try {
 
         // Send OTP via email (ensure the sendOTP function returns a promise)
-        await sendOTP(email, otp);
+        await sendOTP1(email, otp);
         console.log("OTP sent successfully to:", email);
 
         // Send success response

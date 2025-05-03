@@ -55,131 +55,178 @@ const sendPasswordReset = async (email, fullname, resetPasswordCode) => {
   }
 };
 
-// Send OTP Email
-const sendOTP = async (email, verificationCode) => {
-    try {
-        const otpHtml = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>OTP Verification</title>
-              <style>
-                  body {
-                      font-family: Arial, sans-serif;
-                      background-color: #f4f9f6;
-                      color: #333;
-                      margin: 0;
-                      padding: 0;
-                  }
-                  .container {
-                      width: 100%;
-                      max-width: 600px;
-                      margin: 0 auto;
-                      padding: 20px;
-                      background-color: #ffffff;
-                      border-radius: 8px;
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                  }
-                  .header {
-                      text-align: center;
-                      margin-bottom: 20px;
-                  }
-                  .header img {
-                      width: 120px;
-                      margin-bottom: 15px;
-                  }
-                  .header h1 {
-                      color: #65c99f;
-                      font-size: 24px;
-                      font-weight: bold;
-                  }
-                  .content {
-                      text-align: center;
-                  }
-                  .content p {
-                      font-size: 16px;
-                      line-height: 1.5;
-                      color: #555;
-                  }
-                  .otp {
-                      font-size: 32px;
-                      font-weight: bold;
-                      color: #65c99f;
-                      padding: 10px 20px;
-                      background-color: #e5f7e1;
-                      border-radius: 8px;
-                      margin-top: 20px;
-                  }
-                  .link {
-                      display: inline-block;
-                      margin-top: 20px;
-                      padding: 12px 25px;
-                      background-color: #65c99f;
-                      color: white;
-                      border-radius: 6px;
-                      text-decoration: none;
-                      font-size: 16px;
-                  }
-                  .footer {
-                      margin-top: 40px;
-                      text-align: center;
-                      font-size: 12px;
-                      color: #777;
-                  }
-                  .footer a {
-                      color: #65c99f;
-                      text-decoration: none;
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="container">
-                  <!-- Header -->
-                  <div class="header">
-                      <img src="../images/logo.png" alt="SCRHatch Logo">
-                      <h1>OTP Verification</h1>
-                  </div>
+// // Send OTP Email
+// const sendOTP = async (email, verificationCode) => {
+//     try {
+//         const otpHtml = `
+//           <!DOCTYPE html>
+//           <html lang="en">
+//           <head>
+//               <meta charset="UTF-8">
+//               <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//               <title>OTP Verification</title>
+//               <style>
+//                   body {
+//                       font-family: Arial, sans-serif;
+//                       background-color: #f4f9f6;
+//                       color: #333;
+//                       margin: 0;
+//                       padding: 0;
+//                   }
+//                   .container {
+//                       width: 100%;
+//                       max-width: 600px;
+//                       margin: 0 auto;
+//                       padding: 20px;
+//                       background-color: #ffffff;
+//                       border-radius: 8px;
+//                       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//                   }
+//                   .header {
+//                       text-align: center;
+//                       margin-bottom: 20px;
+//                   }
+//                   .header img {
+//                       width: 120px;
+//                       margin-bottom: 15px;
+//                   }
+//                   .header h1 {
+//                       color: #65c99f;
+//                       font-size: 24px;
+//                       font-weight: bold;
+//                   }
+//                   .content {
+//                       text-align: center;
+//                   }
+//                   .content p {
+//                       font-size: 16px;
+//                       line-height: 1.5;
+//                       color: #555;
+//                   }
+//                   .otp {
+//                       font-size: 32px;
+//                       font-weight: bold;
+//                       color: #65c99f;
+//                       padding: 10px 20px;
+//                       background-color: #e5f7e1;
+//                       border-radius: 8px;
+//                       margin-top: 20px;
+//                   }
+//                   .link {
+//                       display: inline-block;
+//                       margin-top: 20px;
+//                       padding: 12px 25px;
+//                       background-color: #65c99f;
+//                       color: white;
+//                       border-radius: 6px;
+//                       text-decoration: none;
+//                       font-size: 16px;
+//                   }
+//                   .footer {
+//                       margin-top: 40px;
+//                       text-align: center;
+//                       font-size: 12px;
+//                       color: #777;
+//                   }
+//                   .footer a {
+//                       color: #65c99f;
+//                       text-decoration: none;
+//                   }
+//               </style>
+//           </head>
+//           <body>
+//               <div class="container">
+//                   <!-- Header -->
+//                   <div class="header">
+//                       <img src="../images/logo.png" alt="SCRHatch Logo">
+//                       <h1>OTP Verification</h1>
+//                   </div>
 
-                  <!-- Main content -->
-                  <div class="content">
-                      <p>Hello,</p>
-                      <p>Here is your one-time password (OTP) for verification:</p>
+//                   <!-- Main content -->
+//                   <div class="content">
+//                       <p>Hello,</p>
+//                       <p>Here is your one-time password (OTP) for verification:</p>
 
-                      <!-- OTP -->
-                      <div class="otp">
-                          ${verificationCode}  <!-- OTP dynamically injected here -->
-                      </div>
+//                       <!-- OTP -->
+//                       <div class="otp">
+//                           ${verificationCode}  <!-- OTP dynamically injected here -->
+//                       </div>
 
-                      <p>This OTP is valid for 10 minutes. Please use it to complete your verification.</p>
+//                       <p>This OTP is valid for 10 minutes. Please use it to complete your verification.</p>
 
-                  </div>
+//                   </div>
 
-                  <!-- Footer -->
-                  <div class="footer">
-                      <p>If you did not request this OTP, please ignore this email.</p>
-                      <p>Powered by <a href="#">SCRHatch</a></p>
-                  </div>
-              </div>
-          </body>
-          </html>
-        `;
+//                   <!-- Footer -->
+//                   <div class="footer">
+//                       <p>If you did not request this OTP, please ignore this email.</p>
+//                       <p>Powered by <a href="#">SCRHatch</a></p>
+//                   </div>
+//               </div>
+//           </body>
+//           </html>
+//         `;
 
-        const info = await transport.sendMail({
-          from: `SCRHatch <${process.env.MAIL_USER}>`,
-          to: email,
-          subject: "Your OTP Verification Code",
-          html: otpHtml, // Sending the OTP HTML content
-        });
+//         const info = await transport.sendMail({
+//           from: `SCRHatch <${process.env.MAIL_USER}>`,
+//           to: email,
+//           subject: "Your OTP Verification Code",
+//           html: otpHtml, // Sending the OTP HTML content
+//         });
 
-        console.log("Email sent:", info.response);
-    } catch (error) {
-        console.error("Error sending OTP:", error);
-        return { msg: "Error sending OTP", error };
-    }
-};
+//         console.log("Email sent:", info.response);
+//     } catch (error) {
+//         console.error("Error sending OTP:", error);
+//         return { msg: "Error sending OTP", error };
+//     }
+// };
   
+
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const sendOTP1 = async (email, verificationCode) => {
+  try {
+    const otpHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <!-- same head content as before -->
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <img src="https://yourdomain.com/images/logo.png" alt="SCRHatch Logo"> <!-- use absolute URL -->
+            <h1>OTP Verification</h1>
+          </div>
+          <div class="content">
+            <p>Hello,</p>
+            <p>Here is your one-time password (OTP) for verification:</p>
+            <div class="otp">${verificationCode}</div>
+            <p>This OTP is valid for 10 minutes. Please use it to complete your verification.</p>
+          </div>
+          <div class="footer">
+            <p>If you did not request this OTP, please ignore this email.</p>
+            <p>Powered by <a href="#">SCRHatch</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const response = await resend.emails.send({
+      from: 'SCRHatch <onboarding@resend.dev>', // or your verified domain sender
+      to: email,
+      subject: 'Your OTP Verification Code',
+      html: otpHtml,
+    });
+
+    console.log('Email sent:', response);
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    return { msg: 'Error sending OTP', error };
+  }
+};
 
 // Send Account Verification Email
 const sendAccountVerification = async (email, fullname, password) => {
@@ -249,7 +296,7 @@ const sendContactUs = async (fullname, subject, message, email) => {
 
 module.exports = {
   sendPasswordReset,
-  sendOTP,
+  sendOTP1,
   sendAccountVerification,
   sendAccountVerificationDenial,
   sendContactUs
