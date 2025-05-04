@@ -10,7 +10,7 @@ const User = require('../models/user');
 const Notification = require('../models/notification');
 const Statistics = require('../models/statistics');
 
-const {sendOTP1} = require('../utils/nodemailer')
+const {sendOTP1, sendBruteForceWarningEmail} = require('../utils/nodemailer')
 
 // // Rate limiting for login attempts (to prevent brute-force attacks)
 // const loginLimiter = rateLimit({
@@ -52,8 +52,7 @@ const loginLimiter = rateLimit({
         // Only now (on limit reached) trigger OTP
         if (email && attemptsMade >= 5) {
             try {
-            const otp = 12345; // Replace with actual OTP logic
-            await sendOTP1(email, otp);
+            await sendBruteForceWarningEmail(email);
             console.log(`Reset OTP sent to ${email}`);
             } catch (err) {
             console.error('Reset email failed:', err.message);

@@ -309,6 +309,102 @@ const sendOTP1 = async (email, verificationCode) => {
   }
 };
 
+
+const sendBruteForceWarningEmail = async (email) => {
+  try {
+    const resetLink = `https://yourfrontend.com/reset-password?email=${encodeURIComponent(email)}`;
+
+    const warningHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Suspicious Login Attempt</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #fff7f7;
+                  color: #333;
+                  padding: 0;
+                  margin: 0;
+              }
+              .container {
+                  max-width: 600px;
+                  margin: auto;
+                  background: #ffffff;
+                  padding: 20px;
+                  border-radius: 8px;
+                  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+              }
+              .header {
+                  text-align: center;
+              }
+              .header img {
+                  width: 100px;
+              }
+              h1 {
+                  color: #e74c3c;
+              }
+              .content {
+                  margin-top: 20px;
+              }
+              .button {
+                  display: inline-block;
+                  margin-top: 20px;
+                  padding: 12px 20px;
+                  background-color: #e74c3c;
+                  color: white;
+                  border-radius: 5px;
+                  text-decoration: none;
+                  font-weight: bold;
+              }
+              .footer {
+                  margin-top: 40px;
+                  font-size: 12px;
+                  color: #999;
+                  text-align: center;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">
+                  <img src="https://scr-hatch-backend.vercel.app/images/logo.png" alt="SCRHatch Logo">
+                  <h1>Suspicious Login Alert</h1>
+              </div>
+              <div class="content">
+                  <p>Hello,</p>
+                  <p>We noticed multiple failed login attempts on your SCRHatch account, which may indicate a potential brute-force attack.</p>
+                  <p>If this wasn't you, we recommend updating your password immediately to secure your account.</p>
+
+                  <a class="button" href="${resetLink}">Reset Your Password</a>
+              </div>
+              <div class="footer">
+                  <p>If you did not initiate any login attempts, please ignore this email or contact support.</p>
+                  <p>SCRHatch Team</p>
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+
+    const response = await resend.emails.send({
+      from: 'SCRHatch <onboarding@resend.dev>',
+      to: email,
+      subject: 'Security Alert: Multiple Failed Login Attempts',
+      html: warningHtml,
+    });
+
+    console.log('Brute-force alert email sent:', response);
+  } catch (error) {
+    console.error('Error sending brute-force warning:', error);
+    return { msg: 'Error sending warning email', error };
+  }
+};
+
+
+
 // Send Account Verification Email
 // const sendAccountVerification = async (email, fullname, password) => {
 //   try {
@@ -378,6 +474,7 @@ const sendOTP1 = async (email, verificationCode) => {
 module.exports = {
   // sendPasswordReset,
   sendOTP1,
+  sendBruteForceWarningEmail,
 //   // sendAccountVerification,
 //   sendAccountVerificationDenial,
 //   sendContactUs
