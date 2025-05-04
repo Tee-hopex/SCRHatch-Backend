@@ -47,14 +47,15 @@ const loginLimiter = rateLimit({
         const attemptsMade = attemptTracker[key] || 5;
         
 
-        // Optional: trigger reset email
-        if (email) {
-        try {
-            const otp = 12345
+        // Only now (on limit reached) trigger OTP
+        if (email && attemptsMade >= 5) {
+            try {
+            const otp = 12345; // Replace with actual OTP logic
             await sendOTP1(email, otp);
-        } catch (err) {
+            console.log(`Reset OTP sent to ${email}`);
+            } catch (err) {
             console.error('Reset email failed:', err.message);
-        }
+            }
         }
 
         return res.status(429).json({
