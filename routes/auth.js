@@ -20,11 +20,11 @@ const {sendOTP1} = require('../utils/nodemailer')
 // });
 
 
-// Helper to extract key per user
-const loginKeyGenerator = (req) => {
-  const email = req.body?.email || 'unknown';
-  return `${req.ip}_${email.toLowerCase()}`;
-};
+// // Helper to extract key per user
+// const loginKeyGenerator = (req) => {
+//   const email = req.body?.email || 'unknown';
+//   return `${req.ip}_${email.toLowerCase()}`;
+// };
 
 const store = new rateLimit.MemoryStore();
 const attemptTracker = {};
@@ -45,6 +45,8 @@ const loginLimiter = rateLimit({
         const email = req.body?.email;
         const key = `${req.ip}_${(email || 'unknown').toLowerCase()}`;
         const attemptsMade = attemptTracker[key] || 5;
+
+        console.log(email)
         
 
         // Only now (on limit reached) trigger OTP
