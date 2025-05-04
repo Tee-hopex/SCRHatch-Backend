@@ -369,7 +369,8 @@ route.get('/accounts', async (req, res) => {
         name: user.fullName,
         username: user.email,
         job_title: user.role,
-        department: user.department || 'Not assigned'
+        department: user.department || 'Not assigned',
+        _id: user._id
       }));
   
       res.status(200).json({ status: 'success', accounts });
@@ -379,7 +380,21 @@ route.get('/accounts', async (req, res) => {
     }
   });
   
-
+// DELETE user by ID
+route.delete('/users/:id', async (req, res) => {
+    try {
+      const user = await User.findByIdAndDelete(req.params.id);
+      if (!user) {
+        return res.status(404).json({ status: 'error', msg: 'User not found' });
+      }
+  
+      res.status(200).json({ status: 'success', msg: 'User deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({ status: 'error', msg: 'Server error', error: error.message });
+    }
+  });
+  
 
 
 
