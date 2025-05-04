@@ -14,7 +14,7 @@ route.get('/', verifyToken, async (req, res) => {
       return res.status(404).json({ status: "error", msg: "User not found" });
     }
 
-    
+
 
     return res.status(200).json({ status: "ok", msg: "Profile retrieved", user });
   } catch (error) {

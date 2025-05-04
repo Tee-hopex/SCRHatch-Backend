@@ -359,5 +359,28 @@ route.get('/dashboard-stats', async (req, res) => {
 });
 
 
+// Fetch all user accounts
+route.get('/accounts', async (req, res) => {
+    try {
+      const users = await User.find({}, 'fullName email role department'); // Adjust fields as needed
+  
+      // Optional: transform fields for clarity
+      const accounts = users.map(user => ({
+        name: user.fullName,
+        username: user.email,
+        job_title: user.role,
+        department: user.department || 'Not assigned'
+      }));
+  
+      res.status(200).json({ status: 'success', accounts });
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+      res.status(500).json({ status: 'error', msg: 'Failed to fetch accounts', error: error.message });
+    }
+  });
+  
+
+
+
 
 module.exports = route;
