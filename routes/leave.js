@@ -86,16 +86,7 @@ route.put('/update_leave/:id', verifyToken, async (req, res) => {
     leave.status = status;
     await leave.save();
 
-    // Optionally, you can send a notification to the user about the status update here
-    const notification = new Notification({
-      userId: leave.user,
-      account: 'worker',
-      username: `${req.userfirstName} ${req.userlastName}`,
-      message: `Your leave application has been ${status}`,
-      timestamp: Date.now(),
-      isRead: false
-    });
-    await notification.save();
+
 
     return res.status(200).json({ status: "ok", msg: "Leave application updated successfully", leave });
   } catch (error) {
