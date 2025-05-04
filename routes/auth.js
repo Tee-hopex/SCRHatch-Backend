@@ -197,7 +197,7 @@ route.post('/login', loginLimiter, async (req, res) => {
         
 
         // Generate JWT token for login
-        const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName}, 
+        const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role}, 
             process.env.JWT_SECRET, { expiresIn: '1h' });
 
         user.is_online = true;
