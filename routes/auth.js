@@ -347,7 +347,10 @@ route.get('/dashboard-stats', async (req, res) => {
             total_sales: statistics.totalSales,
             transactions: statistics.totalTransactions,
             pendingLeaves: statistics.pendingLeaves,
-            items_in_stock: statistics.itemsInStock
+            items_in_stock: statistics.itemsInStock,
+            outdatedStocks: statistics.outdatedStocks,
+            accountCount: statistics.numberOfAccounts
+
         });
     } catch (error) {
         console.error(error);
