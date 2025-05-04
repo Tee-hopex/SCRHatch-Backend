@@ -19,8 +19,6 @@ const {sendOTP1} = require('../utils/nodemailer')
 //   message: { status: 'error', msg: 'Too many login attempts. Please try again in 4 minutes time.' }
 // });
 
-
-const rateLimit = require('express-rate-limit');
 const axios = require('axios'); // You can also use fetch or nodemailer or your own service
 
 const loginLimiter = rateLimit({
