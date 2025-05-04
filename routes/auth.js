@@ -144,6 +144,7 @@ route.post('/login', loginLimiter, async (req, res) => {
         return res.status(400).send({ 'status': 'error', 'msg': 'All fields must be filled' });
     }
 
+    console.log(password)
     try {
         const user = await User.findOne({ email });
         const isPasswordValid = await bcrypt.compare(password, user.password);
