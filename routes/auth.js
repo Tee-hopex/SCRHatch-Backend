@@ -147,9 +147,9 @@ route.post('/login', loginLimiter, async (req, res) => {
     console.log(password)
     try {
         const user = await User.findOne({ email });
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        
 
-        if (!user || user.is_deleted || !isPasswordValid) {
+        if (!user || user.is_deleted) {
 
             // Get current count from rate limiter
             const attemptsMade = req.rateLimit?.count || 1;
@@ -161,6 +161,15 @@ route.post('/login', loginLimiter, async (req, res) => {
               });
         }
 
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(400).send({
+                status: 'error',
+                msg: `Invalid email or password.`,
+              });
+
+        }
 
         // Generate JWT token for login
         const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName}, 
@@ -174,7 +183,6 @@ route.post('/login', loginLimiter, async (req, res) => {
         const notification = new Notification({
             userId: user._id,
             account: user.role,
-            account: user.role,
             username: `${user.firstName} ${user.lastName}`,
             message: `${user.firstName} ${user.lastName} have successfully logged in`,
             timestamp: Date.now(),
@@ -182,8 +190,7 @@ route.post('/login', loginLimiter, async (req, res) => {
         });
 
         await notification.save();
-
-        account: user.role,
+        
         // Send success response with user data and token
         res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', user, token });
         
