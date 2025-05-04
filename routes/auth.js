@@ -52,10 +52,11 @@ const loginLimiter = rateLimit({
         // Only now (on limit reached) trigger OTP
         if (email && attemptsMade >= 5) {
             try {
-            await sendBruteForceWarningEmail(email);
-            console.log(`Reset OTP sent to ${email}`);
+                //send the mail
+                await sendBruteForceWarningEmail(email);
+                console.log(`Reset OTP sent to ${email}`);
             } catch (err) {
-            console.error('Reset email failed:', err.message);
+                console.error('Reset email failed:', err.message);
             }
         }
 
