@@ -73,7 +73,7 @@ route.get('/view_leaves', async (req, res) => {
 });
 
 // (Optional) Endpoint to update a leave application's status (for admin use)
-route.put('/update_leave/:id', verifyToken, async (req, res) => {
+route.put('/update_leave/:id', async (req, res) => {
   const { status } = req.body;
   if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
     return res.status(400).json({ status: "error", msg: "Invalid status value" });
