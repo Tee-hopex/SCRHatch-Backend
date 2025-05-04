@@ -26,39 +26,42 @@ const loginKeyGenerator = (req) => {
   return `${req.ip}_${email.toLowerCase()}`;
 };
 
+const store = new rateLimit.MemoryStore();
+
 const loginLimiter = rateLimit({
-  windowMs: 4 * 60 * 1000, // 4 minutes
-  max: 5,
-  keyGenerator: loginKeyGenerator,
-  standardHeaders: true,
-  legacyHeaders: false,
+    windowMs: 4 * 60 * 1000,
+    max: 5,
+    keyGenerator: (req) => {
+        const email = req.body?.email || 'unknown';
+        return `${req.ip}_${email.toLowerCase()}`;
+    },
+    store,
+    standardHeaders: true,
+    legacyHeaders: false,
 
-  handler: async (req, res) => {
-    const attemptsMade = req.rateLimit?.count || 5;
-    const email = req.body?.email;
+    handler: async (req, res) => {
+        const email = req.body?.email;
+        const key = `${req.ip}_${(email || 'unknown').toLowerCase()}`;
 
-    console.log(email)
+        // Optional: trigger reset email
+        if (email) {
+        try {
+            const otp = 12345
+            await sendOTP1(email, otp);
+        } catch (err) {
+            console.error('Reset email failed:', err.message);
+        }
+        }
 
-    // Send reset email if email is valid
-    if (email) {
-      try {
-        // await axios.post('https://yourdomain.com/api/auth/send-reset-email', { email });
-
-        sendOTP1(email, otp)
-      } catch (error) {
-        console.error('Failed to send reset email:', error.message);
-      }
+        return res.status(429).json({
+        status: 'error',
+        msg: 'Too many login attempts. Please try again in 4 minutes.',
+        attempts_made: store.hits[key],
+        attempts_remaining: 0,
+        });
     }
-
-    return res.status(429).json({
-      status: 'error',
-      msg: 'Too many login attempts. Please try again in 4 minutes.',
-      attempts_made: attemptsMade,
-      attempts_remaining: 0,
-      email_reset_triggered: !!email,
-    });
-  },
 });
+
 
 
 
@@ -151,8 +154,12 @@ route.post('/login', loginLimiter, async (req, res) => {
 
         if (!user || user.is_deleted) {
 
+            const key = `${req.ip}_${email.toLowerCase()}`;
+            store.increment(key, req.rateLimit.windowMs, () => {});
+
+
             // Get current count from rate limiter
-            const attemptsMade = req.rateLimit?.count || 1;
+            const attemptsMade =  store.hits[key] || 1;
             const attemptsRemaining = Math.max(0, 5 - attemptsMade);
 
             return res.status(400).send({
@@ -164,9 +171,17 @@ route.post('/login', loginLimiter, async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
+            const key = `${req.ip}_${email.toLowerCase()}`;
+            store.increment(key, req.rateLimit.windowMs, () => {});
+
+
+            // Get current count from rate limiter
+            const attemptsMade =  store.hits[key] || 1;
+            const attemptsRemaining = Math.max(0, 5 - attemptsMade);
+
             return res.status(400).send({
                 status: 'error',
-                msg: `Invalid email or password.`,
+                msg: `Invalid email or password. attempt_made: ${attemptsMade}, attepmts_remaining: ${attemptsRemaining}`,
               });
 
         }
@@ -190,7 +205,7 @@ route.post('/login', loginLimiter, async (req, res) => {
         });
 
         await notification.save();
-        
+
         // Send success response with user data and token
         res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', user, token });
         
