@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   phoneNumber: { type: String, required: true },
   businessBirthDate: { type: Date, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['auditor', 'worker']},
+  role: { type: String, enum: ['auditor', 'worker', 'admin']},
   Preferences: {type: String},
   selectedPlan: { type: String, enum: ['Bronze', 'Silver', 'Special'], required: true },
   bankCard: { type: String, enum: ['Mastercard', 'Visa', 'Discover', 'American Express'], required: false }, // Optional, as it is based on user selection
