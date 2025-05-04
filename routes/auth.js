@@ -19,50 +19,47 @@ const {sendOTP1} = require('../utils/nodemailer')
 //   message: { status: 'error', msg: 'Too many login attempts. Please try again in 4 minutes time.' }
 // });
 
-const axios = require('axios'); // You can also use fetch or nodemailer or your own service
+
+// Helper to extract key per user
+const loginKeyGenerator = (req) => {
+  const email = req.body?.email || 'unknown';
+  return `${req.ip}_${email.toLowerCase()}`;
+};
 
 const loginLimiter = rateLimit({
   windowMs: 4 * 60 * 1000, // 4 minutes
-  max: 5, // Limit to 5 login attempts per IP
-  standardHeaders: true, 
+  max: 5,
+  keyGenerator: loginKeyGenerator,
+  standardHeaders: true,
   legacyHeaders: false,
 
   handler: async (req, res) => {
-    const ip = req.ip;
-    const tries = req.rateLimit ? req.rateLimit.count : 'unknown';
-    const retryAfter = Math.ceil(req.rateLimit?.resetTime?.getTime() - Date.now()) / 1000;
-
-    // Optional: Get the email from the request body
+    const attemptsMade = req.rateLimit?.count || 5;
     const email = req.body?.email;
-    const otp = 12345
 
-    // Call your password reset API
+    console.log(email)
+
+    // Send reset email if email is valid
     if (email) {
       try {
         // await axios.post('https://yourdomain.com/api/auth/send-reset-email', { email });
+
         sendOTP1(email, otp)
-      } catch (err) {
-        console.error('Failed to trigger password reset email:', err.message);
+      } catch (error) {
+        console.error('Failed to send reset email:', error.message);
       }
     }
 
     return res.status(429).json({
       status: 'error',
       msg: 'Too many login attempts. Please try again in 4 minutes.',
-      attempts_made: req.rateLimit?.count,
+      attempts_made: attemptsMade,
       attempts_remaining: 0,
-      email_reset_triggered: !!email
+      email_reset_triggered: !!email,
     });
   },
-
-  onLimitReached: (req, res, options) => {
-    console.warn(`IP ${req.ip} reached login attempt limit`);
-  },
-
-  keyGenerator: (req, res) => {
-    return req.ip; // default is req.ip, you can use email + IP for more granularity
-  }
 });
+
 
 
 // Signup endpoint
@@ -149,14 +146,20 @@ route.post('/login', loginLimiter, async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
-        if (!user || user.is_deleted) {
-            return res.status(400).send({ 'status': 'error', 'msg': 'Incorrect email or password or user is deleted' });
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!user || user.is_deleted || !isPasswordValid) {
+
+            // Get current count from rate limiter
+            const attemptsMade = req.rateLimit?.count || 1;
+            const attemptsRemaining = Math.max(0, 5 - attemptsMade);
+
+            return res.status(400).send({
+                status: 'error',
+                msg: `Invalid email or password. attempt_made: ${attemptsMade}, attepmts_remaining: ${attemptsRemaining}`,
+              });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).send({ 'status': 'error', 'msg': 'Incorrect email or password' });
-        }
 
         // Generate JWT token for login
         const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName}, 
