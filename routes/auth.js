@@ -12,12 +12,60 @@ const Statistics = require('../models/statistics');
 
 const {sendOTP1} = require('../utils/nodemailer')
 
-// Rate limiting for login attempts (to prevent brute-force attacks)
+// // Rate limiting for login attempts (to prevent brute-force attacks)
+// const loginLimiter = rateLimit({
+//   windowMs: 4 * 60 * 1000, // 15 minutes
+//   max: 5, // Limit each IP to 5 requests per windowMs
+//   message: { status: 'error', msg: 'Too many login attempts. Please try again in 4 minutes time.' }
+// });
+
+
+const rateLimit = require('express-rate-limit');
+const axios = require('axios'); // You can also use fetch or nodemailer or your own service
+
 const loginLimiter = rateLimit({
-  windowMs: 4 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
-  message: { status: 'error', msg: 'Too many login attempts. Please try again in 4 minutes time.' }
+  windowMs: 4 * 60 * 1000, // 4 minutes
+  max: 5, // Limit to 5 login attempts per IP
+  standardHeaders: true, 
+  legacyHeaders: false,
+
+  handler: async (req, res) => {
+    const ip = req.ip;
+    const tries = req.rateLimit ? req.rateLimit.count : 'unknown';
+    const retryAfter = Math.ceil(req.rateLimit?.resetTime?.getTime() - Date.now()) / 1000;
+
+    // Optional: Get the email from the request body
+    const email = req.body?.email;
+    const otp = 12345
+
+    // Call your password reset API
+    if (email) {
+      try {
+        // await axios.post('https://yourdomain.com/api/auth/send-reset-email', { email });
+        sendOTP1(email, otp)
+      } catch (err) {
+        console.error('Failed to trigger password reset email:', err.message);
+      }
+    }
+
+    return res.status(429).json({
+      status: 'error',
+      msg: 'Too many login attempts. Please try again in 4 minutes.',
+      attempts_made: req.rateLimit?.count,
+      attempts_remaining: 0,
+      email_reset_triggered: !!email
+    });
+  },
+
+  onLimitReached: (req, res, options) => {
+    console.warn(`IP ${req.ip} reached login attempt limit`);
+  },
+
+  keyGenerator: (req, res) => {
+    return req.ip; // default is req.ip, you can use email + IP for more granularity
+  }
 });
+
 
 // Signup endpoint
 route.post('/sign_up', async (req, res) => {
@@ -123,6 +171,8 @@ route.post('/login', loginLimiter, async (req, res) => {
         //notify user of login
         const notification = new Notification({
             userId: user._id,
+            account: user.role,
+            account: user.role,
             username: `${user.firstName} ${user.lastName}`,
             message: `${user.firstName} ${user.lastName} have successfully logged in`,
             timestamp: Date.now(),
@@ -131,6 +181,7 @@ route.post('/login', loginLimiter, async (req, res) => {
 
         await notification.save();
 
+        account: user.role,
         // Send success response with user data and token
         res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', user, token });
         
@@ -161,6 +212,7 @@ route.post('/logout', async (req, res) => {
         // Notify user of logout
         notification = new Notification({
             userId: user._id,
+            account: user.role,
             username: `${user.firstName} ${user.lastName}`,
             message: `${user.firstName} ${user.lastName} have successfully logged out`,
             timestamp: Date.now(),
@@ -242,7 +294,7 @@ route.post('/verify', async (req, res) => {
 });
 
 
-// Endpoint to fetch dashboard statistics
+// Endpoint to fetch worker dashboard statistics
 route.get('/dashboard-stats', async (req, res) => {
     try {
         const statistics = await Statistics.findOne({});

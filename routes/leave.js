@@ -37,6 +37,7 @@ route.post('/apply_leave', verifyToken, async (req, res) => {
     // Optionally, you can send a notification to the admin or relevant personnel here
     const notification = new Notification({
       userId: req.userId,
+      account: 'worker',
       username: `${req.userfirstName} ${req.userlastName}`,
       message: `Leave application submitted by ${name} from ${start_date} to ${end_date}`,
       timestamp: Date.now(),
@@ -88,6 +89,7 @@ route.put('/update_leave/:id', verifyToken, async (req, res) => {
     // Optionally, you can send a notification to the user about the status update here
     const notification = new Notification({
       userId: leave.user,
+      account: 'worker',
       username: `${req.userfirstName} ${req.userlastName}`,
       message: `Your leave application has been ${status}`,
       timestamp: Date.now(),

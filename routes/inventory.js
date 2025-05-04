@@ -71,6 +71,7 @@ route.post('/new_product', verifyToken, async (req, res) => {
             // Create a new notification for the user
             const notification = new notifications({
                 userId: req.userId,
+                account: 'worker',
                 username: `${req.userfirstName} ${req.userlastName}`,
                 message: `New product ${productName} created successfully`,
                 isRead: false,
@@ -134,6 +135,7 @@ route.put('/edit_product/:productName',verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
+            account: 'worker',
             username: `${req.userfirstName} ${req.userlastName}`,
             message: `Product ${productName} updated successfully`,
             timestamp: Date.now(),
@@ -286,6 +288,7 @@ route.post('/buy_product', verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
+            account: 'worker',
             username: `${req.userfirstName} ${req.userlastName}`,
             message: `Purchase successful for ${productName}. Total amount: $${totalAmount}`,
             timestamp: Date.now(),
@@ -327,6 +330,7 @@ route.delete('/delete_product/:productName', verifyToken, async (req, res) => {
         // Create a new notification for the user
         const notification = new notifications({
             userId: req.userId,
+            account: 'worker',
             username: `${req.userfirstName} ${req.userlastName}`,
             message: `Product ${productName} deleted successfully`,
             timestamp: Date.now(),

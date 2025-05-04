@@ -7,7 +7,7 @@ const User = require('../models/user');
 const Notification = require('../models/notification')
 
 
-// GET /profile - Retrieve current user's profile
+// view logs
 route.get('/view_logs', async (req, res) => {
   try {
     const logs = await Notification.find().sort({ timestamp: -1 });
