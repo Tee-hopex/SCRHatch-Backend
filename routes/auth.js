@@ -27,6 +27,8 @@ const loginKeyGenerator = (req) => {
 };
 
 const store = new rateLimit.MemoryStore();
+const attemptTracker = {};
+
 
 const loginLimiter = rateLimit({
     windowMs: 4 * 60 * 1000,
@@ -42,6 +44,8 @@ const loginLimiter = rateLimit({
     handler: async (req, res) => {
         const email = req.body?.email;
         const key = `${req.ip}_${(email || 'unknown').toLowerCase()}`;
+        const attemptsMade = attemptTracker[key] || 5;
+        
 
         // Optional: trigger reset email
         if (email) {
@@ -56,7 +60,7 @@ const loginLimiter = rateLimit({
         return res.status(429).json({
         status: 'error',
         msg: 'Too many login attempts. Please try again in 4 minutes.',
-        attempts_made: store.hits[key],
+        attempts_made: attemptsMade,
         attempts_remaining: 0,
         });
     }
@@ -155,11 +159,12 @@ route.post('/login', loginLimiter, async (req, res) => {
         if (!user || user.is_deleted) {
 
             const key = `${req.ip}_${email.toLowerCase()}`;
-            store.increment(key, req.rateLimit.windowMs, () => {});
 
+            // Increment attempts manually
+            attemptTracker[key] = (attemptTracker[key] || 0) + 1;
 
             // Get current count from rate limiter
-            const attemptsMade =  store.hits[key] || 1;
+            const attemptsMade = attemptTracker[key];
             const attemptsRemaining = Math.max(0, 5 - attemptsMade);
 
             return res.status(400).send({
@@ -172,19 +177,21 @@ route.post('/login', loginLimiter, async (req, res) => {
 
         if (!isPasswordValid) {
             const key = `${req.ip}_${email.toLowerCase()}`;
-            store.increment(key, req.rateLimit.windowMs, () => {});
 
+            // Increment attempts manually
+            attemptTracker[key] = (attemptTracker[key] || 0) + 1;
 
             // Get current count from rate limiter
-            const attemptsMade =  store.hits[key] || 1;
+            const attemptsMade = attemptTracker[key];
             const attemptsRemaining = Math.max(0, 5 - attemptsMade);
 
             return res.status(400).send({
                 status: 'error',
                 msg: `Invalid email or password. attempt_made: ${attemptsMade}, attepmts_remaining: ${attemptsRemaining}`,
               });
+            }
 
-        }
+        
 
         // Generate JWT token for login
         const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName}, 
@@ -206,8 +213,13 @@ route.post('/login', loginLimiter, async (req, res) => {
 
         await notification.save();
 
+        const key = `${req.ip}_${email.toLowerCase()}`;
+        delete attemptTracker[key];
+
+
         // Send success response with user data and token
         res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', user, token });
+
         
     } catch (error) {
         console.error(error);
