@@ -26,28 +26,49 @@ route.get('/', verifyToken, async (req, res) => {
 // PUT /profile - Update profile information
 // Here we assume the client sends a "name" field (full name) and "email"
 route.put('/edit_profile', verifyToken, async (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ status: "error", msg: "Name and email are required" });
+  const { name, email, username, phoneno } = req.body;
+
+  if (!name || !email || !username || !phoneno) {
+    return res.status(400).json({ status: "error", msg: "All fields (name, email, username, phone number) are required." });
   }
 
-  // Split the full name into firstName and lastName (simple split on first space)
+  // Split name into firstName and lastName
   const nameParts = name.trim().split(' ');
   const firstName = nameParts.shift();
-  const lastName = nameParts.join(' ') || "";
+  const lastName = nameParts.join(' ') || '';
+  const fullName = `${firstName} ${lastName}`;
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.userId,
-      { firstName, lastName, email },
+      {
+        firstName,
+        lastName,
+        fullName,
+        email,
+        username,
+        phoneNumber: phoneno,
+        last_updated: Date.now()
+      },
       { new: true, runValidators: true }
-    ).select('-password'); //This ensures that when the user document is retrieved from the database, the password field is not included in the returned data.
-    return res.status(200).json({ status: "ok", msg: "Profile updated successfully", user: updatedUser });
+    ).select('-password -otp -otpExpiration');
+
+    return res.status(200).json({
+      status: "ok",
+      msg: "Profile updated successfully",
+      user: updatedUser
+    });
+
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: "error", msg: "Error updating profile", error: error.message });
+    return res.status(500).json({
+      status: "error",
+      msg: "Error updating profile",
+      error: error.message
+    });
   }
 });
+
 
 // PUT /profile/change_password - Change password
 route.put('/change_password', verifyToken, async (req, res) => {

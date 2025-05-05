@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   fullName: {type: String, require: true},
+  username: {type: String},
   profilePic: { type: String, required: false},
   businessName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -20,6 +21,7 @@ const userSchema = new mongoose.Schema({
   is_deleted: { type: Boolean, default: false },
   last_login: {type: Number, default: Date.now()},
   last_updated: {type: Number, default: Date.now()},
+  total_login: {type: Number, default: 0},
   
   // New fields for OTP
   otp: { type: String, required: false }, // OTP will be stored here
