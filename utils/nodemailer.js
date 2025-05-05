@@ -267,7 +267,7 @@ const sendOTP1 = async (email, verificationCode) => {
                 <div class="container">
                     <!-- Header -->
                     <div class="header">
-                        <img src="https://scr-hatch-backend.vercel.app/images/logo.png" alt="SCRHatch Logo">
+                       
                         <h1>OTP Verification</h1>
                     </div>
 
@@ -370,7 +370,7 @@ const sendBruteForceWarningEmail = async (email) => {
       <body>
           <div class="container">
               <div class="header">
-                  <img src="https://scr-hatch-backend.vercel.app/images/logo.png" alt="SCRHatch Logo">
+                  
                   <h1>Suspicious Login Alert</h1>
               </div>
               <div class="content">
