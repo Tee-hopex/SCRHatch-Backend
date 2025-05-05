@@ -51,7 +51,25 @@ const loginLimiter = rateLimit({
 
         // Only now (on limit reached) trigger OTP
         if (email && attemptsMade >= 5) {
+            console.log('it got here')
             try {
+
+                const user = await User.findOne({ email });
+
+                //notify user of login
+                const notification = new Notification({
+                    userId: user._id,
+                    account: user.role,
+                    username: `${user.firstName} ${user.lastName}`,
+                    message: `Security Alert! Multiple failed log in attempts`,
+                    timestamp: Date.now(),
+                    isRead: false
+                });
+
+                await notification.save();
+
+
+                
                 //send the mail
                 await sendBruteForceWarningEmail(email);
                 console.log(`Reset OTP sent to ${email}`);
