@@ -4,7 +4,7 @@ const route = express.Router();
 const User = require('../models/user');
 const verifyToken = require('../middleware/verifyToken');
 const Notification = require('../models/notification');
-
+const jwt = require('jsonwebtoken')
 
 // GET /profile - Retrieve current user's profile
 route.get('/', verifyToken, async (req, res) => {
