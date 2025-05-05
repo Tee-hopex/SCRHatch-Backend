@@ -29,7 +29,10 @@ route.put('/edit_profile', verifyToken, async (req, res) => {
   const { name, email, username, phoneno } = req.body;
 
   if (!name || !email || !username || !phoneno) {
-    return res.status(400).json({ status: "error", msg: "All fields (name, email, username, phone number) are required." });
+    return res.status(400).json({
+      status: "error",
+      msg: "All fields (name, email, username, phone number) are required."
+    });
   }
 
   // Split name into firstName and lastName
@@ -53,10 +56,20 @@ route.put('/edit_profile', verifyToken, async (req, res) => {
       { new: true, runValidators: true }
     ).select('-password -otp -otpExpiration');
 
+    // Re-sign new JWT token
+    const token = jwt.sign({
+      _id: updatedUser._id,
+      email: updatedUser.email,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      role: updatedUser.role
+    }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     return res.status(200).json({
       status: "ok",
       msg: "Profile updated successfully",
-      user: updatedUser
+      user: updatedUser,
+      token
     });
 
   } catch (error) {
@@ -68,6 +81,7 @@ route.put('/edit_profile', verifyToken, async (req, res) => {
     });
   }
 });
+
 
 
 // PUT /profile/change_password - Change password

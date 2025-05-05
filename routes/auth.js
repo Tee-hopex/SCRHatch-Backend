@@ -202,6 +202,7 @@ route.post('/login', loginLimiter, async (req, res) => {
 
         user.is_online = true;
         user.last_login = Date.now()
+        user.total_login += 1
         await user.save();
 
         //notify user of login
