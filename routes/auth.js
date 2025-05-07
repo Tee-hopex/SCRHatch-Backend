@@ -240,7 +240,7 @@ route.post('/login', loginLimiter, async (req, res) => {
 
 
         // Send success response with user data and token
-        res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', user, token });
+        res.status(200).send({ 'status': 'success', 'msg': 'You have successfully logged in', token });
 
         
     } catch (error) {
